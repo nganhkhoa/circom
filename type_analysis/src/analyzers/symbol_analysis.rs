@@ -116,7 +116,7 @@ pub fn analyze_symbols(
         report.add_primary(
             param_location.clone(),
             file_id.clone(),
-            format!("Declaring same symbol twice"),
+            format!("Declaring same symbol twice in params: {:?}", params_names),
         );
         reports.push(report);
     }
@@ -210,13 +210,13 @@ fn analyze_statement(
             }
             if !add_symbol_to_block(environment, name) {
                 let mut report = Report::error(
-                    format!("Symbol declared twice"),
+                    format!("Symbol {:?} declared twice", name),
                     ReportCode::SameSymbolDeclaredTwice,
                 );
                 report.add_primary(
                     meta.location.clone(),
                     file_id.clone(),
-                    format!("Declaring same symbol twice"),
+                    format!("Declaring same symbol ({:?}) twice", name),
                 );
                 reports.push(report);
             }
@@ -281,7 +281,7 @@ fn treat_variable(
         report.add_primary(
             file_definition::generate_file_location(meta.get_start(), meta.get_end()),
             file_id.clone(),
-            format!("Using unknown symbol"),
+            format!("Using unknown symbol {:?}", name),
         );
         reports.push(report);
     }
@@ -347,7 +347,7 @@ fn analyze_expression(
                 report.add_primary(
                     file_definition::generate_file_location(meta.get_start(), meta.get_end()),
                     file_id.clone(),
-                    format!("Calling unknown symbol"),
+                    format!("Calling unknown symbol {:?}", id),
                 );
                 reports.push(report);
                 return;
@@ -359,13 +359,13 @@ fn analyze_expression(
             };
             if args.len() != expected_num_of_params {
                 let mut report = Report::error(
-                    format!("Calling function with wrong number of arguments"),
+                    format!("Calling function/template {:?} with wrong number of arguments", id),
                     ReportCode::FunctionWrongNumberOfArguments,
                 );
                 report.add_primary(
                     file_definition::generate_file_location(meta.get_start(), meta.get_end()),
                     file_id.clone(),
-                    format!("Got {} params, {} where expected", args.len(), expected_num_of_params),
+                    format!("Function/Template {:?}: Got {} params, {} where expected", id, args.len(), expected_num_of_params),
                 );
                 reports.push(report);
                 return;
